@@ -4589,11 +4589,10 @@ class ArticleAttributesTests(unittest.TestCase):
         return schematron.validate(etree.parse(sample))
 
     def test_allowed_article_types(self):
-        for art_type in ['research-article', 'letter', 'article-commentary',
-                'brief-report', 'editorial', 'in-brief', 'case-report', 'report',
-                'note', 'correction', 'obituary', 'abstract', 'review-article',
-                'book-review', 'product-review', 'clinical-trial', 'retraction',
-                'collection']:
+        for art_type in ['abstract', 'announcement', 'other', 'article-commentary',
+                'case-report', 'editorial', 'correction', 'letter', 'research-article',
+                'in-brief', 'review-article', 'book-review', 'retraction',
+                'brief-report', 'rapid-communication', 'reply', 'translation']:
 
             sample = """<article article-type="%s" xml:lang="en" dtd-version="1.0">
                         </article>

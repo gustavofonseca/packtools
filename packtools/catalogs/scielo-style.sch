@@ -1049,24 +1049,23 @@
     </title>
 
     <rule context="article[@article-type]">
-      <assert test="@article-type = 'research-article' or
-                    @article-type = 'letter' or 
+      <assert test="@article-type = 'abstract' or 
+                    @article-type = 'announcement' or
+                    @article-type = 'other' or
                     @article-type = 'article-commentary' or 
-                    @article-type = 'brief-report' or 
-                    @article-type = 'editorial' or
-                    @article-type = 'in-brief' or 
                     @article-type = 'case-report' or 
-                    @article-type = 'report' or 
-                    @article-type = 'note' or 
+                    @article-type = 'editorial' or
                     @article-type = 'correction' or
-                    @article-type = 'obituary' or
-                    @article-type = 'abstract' or 
+                    @article-type = 'letter' or 
+                    @article-type = 'research-article' or
+                    @article-type = 'in-brief' or 
                     @article-type = 'review-article' or 
                     @article-type = 'book-review' or 
-                    @article-type = 'product-review' or 
-                    @article-type = 'clinical-trial' or 
                     @article-type = 'retraction' or 
-                    @article-type = 'collection'">
+                    @article-type = 'brief-report' or 
+                    @article-type = 'rapid-communication' or 
+                    @article-type = 'reply' or 
+                    @article-type = 'translation'">
         Element 'article', attribute article-type: Invalid value '<value-of select="@article-type"/>'.
       </assert>
     </rule>
