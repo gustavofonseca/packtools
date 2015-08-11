@@ -21,6 +21,10 @@ from . import utils, catalogs, checks, style_errors
 logger = logging.getLogger(__name__)
 
 
+# As a general rule, only the latest 2 versions are supported concurrently.
+CURRENTLY_SUPPORTED_VERSIONS = os.environ.get(
+    'PACKTOOLS_SUPPORTED_SPS_VERSIONS', 'sps-1.1,sps-1.2').split(',')
+
 ALLOWED_PUBLIC_IDS = (
     '-//NLM//DTD JATS (Z39.96) Journal Publishing DTD v1.0 20120330//EN',
 )
@@ -30,6 +34,36 @@ ALLOWED_PUBLIC_IDS_LEGACY = (
     '-//NLM//DTD JATS (Z39.96) Journal Publishing DTD v1.0 20120330//EN',
     '-//NLM//DTD Journal Publishing DTD v3.0 20080202//EN',
 )
+
+
+def _get_public_ids(sps_version):
+    """Returns the set of allowed public ids for the XML based on its version.
+    """
+    if sps_version in ['pre-sps', 'sps-1.1']:
+        return frozenset(ALLOWED_PUBLIC_IDS_LEGACY)
+    else:
+        return frozenset(ALLOWED_PUBLIC_IDS)
+
+
+def _init_sps_version(xml_et, supported_versions=None):
+    """Returns the SPS spec version for `xml_et` or raises ValueError.
+
+    It also checks if the version is currently supported.
+    :param xml_et: etree instance.
+    :param supported_versions: (optional) the default value is set by env var `PACKTOOLS_SUPPORTED_SPS_VERSIONS`.
+    """
+    if supported_versions is None:
+        supported_versions = CURRENTLY_SUPPORTED_VERSIONS
+
+    try:
+        version_from_xml = xml_et.getroot().attrib['specific-use']
+    except KeyError:
+        raise ValueError('Missing SPS version at /article/@specific-use')
+
+    if version_from_xml not in supported_versions:
+        raise ValueError('%s is not currently supported' % version_from_xml)
+    else:
+        return version_from_xml
 
 
 def Schematron(file):
@@ -92,8 +126,6 @@ class XMLValidator(object):
     :param sps_version: (optional) force the style validation with a SPS version.
     :param extra_schematron: (optional) extra schematron schema.
     """
-    allowed_public_ids = frozenset(ALLOWED_PUBLIC_IDS)
-
     def __init__(self, file, dtd=None, no_doctype=False, sps_version=None,
                  extra_schematron=None):
         if isinstance(file, etree._ElementTree):
@@ -101,12 +133,11 @@ class XMLValidator(object):
         else:
             self.lxml = utils.XML(file)
 
-        # add self.sps_version or raise ValueError
-        self._init_sps_version(sps_version)
+        # can raise ValueError
+        self.sps_version = sps_version or _init_sps_version(self.lxml)
 
         # sps version is relevant to _init_doctype method
-        if self.sps_version != 'sps-1.2':
-            self.allowed_public_ids = frozenset(ALLOWED_PUBLIC_IDS_LEGACY)
+        self.allowed_public_ids = _get_public_ids(self.sps_version)
 
         # add self.doctype or raise ValueError
         self._init_doctype(no_doctype)
@@ -121,14 +152,6 @@ class XMLValidator(object):
         else:
             self.extra_schematron = None
         self.ppl = checks.StyleCheckingPipeline()
-
-    def _init_sps_version(self, sps_version):
-        """Initializes the attribute self.sps_version or raises ValueError.
-        """
-        try:
-            self.sps_version = sps_version or self.lxml.getroot().attrib['specific-use']
-        except KeyError:
-            raise ValueError('Missing SPS version at /article/@specific-use')
 
     def _init_doctype(self, no_doctype):
         """Initializes the attribute self.doctype or raises ValueError.
