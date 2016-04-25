@@ -248,7 +248,17 @@
 				</xref>
 			</p>
 			<disp-formula>
-				<graphic xlink:href="0034-8910-rsp-48-2-0232-ee01"/>
+                <mml:math id="e03">
+                    <mml:mrow>
+                        <mml:msup>
+                            <mml:mover accent="true">
+                                <mml:mi>σ</mml:mi>
+                                <mml:mo>ˆ</mml:mo>
+                            </mml:mover>
+                            <mml:mn>2</mml:mn>
+                        </mml:msup>
+                    </mml:mrow>
+                </mml:math>
 			</disp-formula>
 			<p>Pela dificuldade em satisfazer todas essas condições, optou-se por flexibilizar esses critérios e considerar nível âncora aquele que apresentasse duas das condições de classificação descritas, além de considerar a probabilidade &gt; 60,0% em determinado nível âncora da escala.</p>
 			<p>Os valores dos parâmetros dos itens (<italic>a, b</italic>) e dos escores de adesão ao tratamento da HAS foram estimados na mesma métrica na escala com média 0 e desvio padrão (DP) 1,0. Esses valores foram transformados utilizando média 100 e DP 10, i.e., escala (100, 10), para melhorar a compreensão dos resultados.</p>
