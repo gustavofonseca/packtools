@@ -436,12 +436,28 @@
     </xsl:template>
 
 
+    <!-- Section title according to its level. -->
+    <!-- Heavily based on code from https://github.com/PeerJ/jats-conversion -->
+    <!-- TODO: Make sure we are not infringing some copyrights -->
     <xsl:template match="sec/title">
-        <header>
-            <h1><xsl:apply-templates/></h1>
-        </header>
-    </xsl:template>
+        <xsl:variable name="heading-count" select="count(ancestor::sec) + 1"/>
 
+        <xsl:variable name="heading-level">
+            <xsl:choose>
+                <xsl:when test="$heading-count > 6">6</xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="$heading-count"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+
+        <xsl:variable name="heading">h<xsl:value-of select="$heading-level"/></xsl:variable>
+
+        <xsl:element name="{$heading}">
+            <xsl:attribute name="class">heading</xsl:attribute>
+            <xsl:apply-templates/>
+        </xsl:element>
+    </xsl:template>
 
     <!-- ================================================================== -->
     <!-- table: the XHTML table model -->
