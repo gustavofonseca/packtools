@@ -32,10 +32,7 @@
 
     <xsl:param name="show.unhandled.elements" select="1"/>
     <xsl:param name="show.mathjax.cdnlink" select="1"/>
-    <xsl:param name="article_lang" />
-    <xsl:param name="is_translation" />
-    <xsl:param name="issue_label" />
-    <xsl:param name="styles_css_path" />
+    <xsl:param name="css_path"/>
 
     <xsl:output method="html" 
                 indent="no" 
@@ -126,8 +123,8 @@
         <link rel="stylesheet" 
               type="text/css" 
               href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
-        <xsl:if test="$styles_css_path">
-            <link rel="stylesheet" type="text/css" href="{$styles_css_path}"/>
+        <xsl:if test="$css_path">
+            <link rel="stylesheet" type="text/css" href="{$css_path}"/>
         </xsl:if>
     </xsl:template>
 
@@ -138,6 +135,9 @@
             </script>
         </xsl:if>
     </xsl:template>
+
+    <!-- Drop translations -->
+    <xsl:template match="sub-article[@article-type = 'translation']"/>
 
 
     <!-- ================================================================== -->
@@ -452,15 +452,16 @@
         </xsl:variable>
 
         <xsl:variable name="heading">h<xsl:value-of select="$heading-level"/></xsl:variable>
-
-        <xsl:element name="{$heading}">
-            <xsl:attribute name="class">heading</xsl:attribute>
-            <xsl:apply-templates/>
-        </xsl:element>
+        
+        <header>
+            <xsl:element name="{$heading}">
+                <xsl:apply-templates/>
+            </xsl:element>
+        </header>
     </xsl:template>
 
     <!-- ================================================================== -->
-    <!-- table: the XHTML table model -->
+    <!-- JATS tables: Tables are already in XHTML. -->
 
     <!-- TODO: 2016-04-26 : Prevent the copy of deprecated attributes! -->
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table -->
@@ -573,34 +574,46 @@
     <!-- ================================================================== -->
     <!-- Formatting elements -->
 
-    <!-- break: line break -->
-    <!-- equates to HTML <br/> -->
     <xsl:template match="break">
         <br/>
     </xsl:template>
 
-    <!-- italic: in-line italics -->
-    <!-- equates to HTML <i> -->
     <xsl:template match="italic">
         <i><xsl:apply-templates/></i>
     </xsl:template>
 
-    <!-- bold: in-line emphasis -->
-    <!-- equates to HTML <b> -->
     <xsl:template match="bold">
         <b><xsl:apply-templates/></b>
     </xsl:template>
 
-    <!-- strike: in-line strikethrough -->
-    <!-- equates to HTML <s> -->
     <xsl:template match="strike">
         <s><xsl:apply-templates/></s>
     </xsl:template>
 
-    <!-- hr: an explicit horizontal rule -->
-    <!-- equates to HTML <hr/> -->
     <xsl:template match="hr">
         <hr/>
+    </xsl:template>
+
+    <xsl:template match="monospace">
+        <code><xsl:apply-templates/></code>
+    </xsl:template>
+
+    <xsl:template match="overline">
+        <span style="text-decoration: overline">
+            <xsl:apply-templates/>
+        </span>
+    </xsl:template>
+
+    <xsl:template match="strike">
+        <span style="text-decoration: line-through">
+            <xsl:apply-templates/>
+        </span>
+    </xsl:template>
+    
+    <xsl:template match="sup|sub">
+        <xsl:element name="{name()}">
+            <xsl:apply-templates/>
+        </xsl:element>
     </xsl:template>
 
 
@@ -613,7 +626,7 @@
         </a>
     </xsl:template>
 
-    <xsl:template match="p|sup|sub">
+    <xsl:template match="p">
         <xsl:element name="{name()}">
             <xsl:apply-templates/>
         </xsl:element>
